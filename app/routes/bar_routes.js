@@ -32,8 +32,8 @@ const router = express.Router()
 
 // INDEX
 // GET /bars -- get all bars
-router.get('/bars', requireToken, (req, res, next) => {
-  Bar.find({ owner: req.user._id })
+router.get('/bars', (req, res, next) => {
+  Bar.find()
     .then(bars => {
       // `bars` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
@@ -46,15 +46,26 @@ router.get('/bars', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+// user specific index
+router.get('/user_bars', requireToken, (req, res, next) => {
+  let search = { owner: req.user.id }
+  Bar.find(search)
+    .then(bars => {
+      return bars.map(bar => bar.toObject())
+    })
+    .then(bars => res.status(200).json({ bars: bars }))
+    .catch(next)
+})
+
 // SHOW
 // GET /bars/5a7db6c74d55bc51bdf39793
 router.get('/bars/:id', requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Bar.findById(req.params.id)
+    .populate('owner')
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "bar" JSON
     .then(bar => {
-      requireOwnership(req, bar)
       return res.status(200).json({ bar: bar.toObject() })
     })
     // if an error occurs, pass it to the handler
