@@ -43,8 +43,10 @@ router.use((req, res, next) => {
 // INDEX
 // GET /bars -- get all bars
 router.get('/bars', (req, res, next) => {
+  console.log('made it here in Bars Router')
   Bar.find()
     .then(bars => {
+      console.log(bars, 'inTheBarsRouter')
       // `bars` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
       // apply `.toObject` to each one
