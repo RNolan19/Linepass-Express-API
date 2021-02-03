@@ -30,7 +30,15 @@ const cors = require('cors')
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
-router.use(cors())
+// Add Access Control Allow Origin headers
+router.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 // INDEX
 // GET /bars -- get all bars
